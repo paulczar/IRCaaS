@@ -12,7 +12,7 @@ class UsersController < ApplicationController
         iptables_remove_ip @user.secure_ip
         @user.secure_ip = nil;
         @user.save!(validate: false)
-        flash[:success] = "Your Memcached server is now accessible by anyone."
+        flash[:success] = "Your ZNC server is now accessible by anyone."
       end
     else
       if !check_ip(params[:ip])
@@ -24,7 +24,7 @@ class UsersController < ApplicationController
         iptables_add_ip(params[:ip])
         @user.secure_ip = params[:ip]
         @user.save(validate: false)
-        flash[:success] = "Your Memcached server will now work only with requests from IP #{@user.secure_ip}."
+        flash[:success] = "Your ZNC server will now work only with requests from IP #{@user.secure_ip}."
       end
     end
     redirect_to me_path
@@ -46,7 +46,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     @user.secure_ip = nil;
-    create_memcached_instance
+    create_znc_instance
     if @user.save
       sign_in @user
       flash[:success] = "Welcome!"
@@ -65,15 +65,17 @@ class UsersController < ApplicationController
     end
   end
 
-  def create_memcached_instance
-    docker_path = '/home/julien/docker-master/'
-    container_id = `#{docker_path}docker run -d -p 11211 jbarbier/memcached memcached -u daemon`
-    cmd = "#{docker_path}docker inspect #{container_id}"
+  def create_znc_instance
+    docker_cmd = ENV['docker_cmd'] ||= 'docker'
+    container_id = `#{docker_cmd} run -e ZNC_USER=#{@user.znc_user} -e ZNC_PASS=#{@user.znc_pass} -d -p 6667 -u znc paulczar/znc start-znc`
+    cmd = "#{docker_cmd} inspect #{container_id}"
     json_infos = `#{cmd}`
     i = JSON.parse(json_infos)
-    @user.memcached = i["NetworkSettings"]["PortMapping"]["11211"]
+    @user.port = i[0]["NetworkSettings"]["PortMapping"]["Tcp"]["6667"]
     @user.container_id = container_id
-    @user.docker_ip = i["NetworkSettings"]["IpAddress"]
+    @user.docker_ip = i[0]["NetworkSettings"]["IpAddress"]
+    sleep 2
+    @user.log = `#{docker_cmd} logs #{container_id}`
   end
   
   $VALIDATE_IP_REGEX = /^([01]?\d\d?|2[0-4]\d|25[0-5])\.([01]?\d\d?|2[0-4]\d|25[0-5])\.([01]?\d\d?|2[0-4]\d|25[0-5])\.([01]?\d\d?|2[0-4]\d|25[0-5])$/  

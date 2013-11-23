@@ -11,17 +11,20 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130412175743) do
+ActiveRecord::Schema.define(:version => 20130830221601) do
 
   create_table "users", :force => true do |t|
     t.string   "email"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
     t.string   "password_digest"
-    t.string   "memcached"
+    t.string   "port"
     t.string   "docker_ip"
     t.string   "secure_ip"
     t.string   "container_id"
+    t.string   "log"
+    t.string   "znc_user"
+    t.string   "znc_pass"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

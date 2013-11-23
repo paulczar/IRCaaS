@@ -4,16 +4,19 @@
   <%= @user.email %>
 </h1>
 <div class="alert alert-info">
-  Congratulations <%= @user.email %>. Your Memcached server is ready to use.
+  Congratulations <%= @user.email %>. Your IRC Bouncer is ready to use.
 </div>
-<h1>Your Memcached Server is ready!</h1>
+<h1>Your IRC Bouncer is ready!</h1>
 <div class="block-info">
   <h3>IP: <%= my_public_ip %></h3>
-  <h3>PORT: <%= @user.memcached %></h3>
-</div>
-<div class="alert alert-info">
-  Use it with your favorite language.
+  <h3>PORT: <%= @user.port %></h3>
+    <ul>
+      <li> enable SSL.
+      <li> allow self-signed certs.
+      <li> connect with your IRC user/pass
+    </ul>
+  </p>
 </div>
 
-<%= render 'code' %>
-<%= render 'ip' %>
+<%= render 'xirc' %>
+
