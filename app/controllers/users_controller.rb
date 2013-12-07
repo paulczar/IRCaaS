@@ -71,7 +71,7 @@ class UsersController < ApplicationController
     cmd = "#{docker_cmd} inspect #{container_id}"
     json_infos = `#{cmd}`
     i = JSON.parse(json_infos)
-    @user.port = i[0]["NetworkSettings"]["Ports"]["6667/tcp"]["HostPort"]
+    @user.port = i[0]["NetworkSettings"]["Ports"]["6667/tcp"]["HostPort"].to_i
     @user.container_id = container_id
     @user.docker_ip = i[0]["NetworkSettings"]["IpAddress"]
     sleep 2
