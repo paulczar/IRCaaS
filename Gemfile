@@ -5,7 +5,6 @@ gem 'bootstrap-sass', '2.1'
 gem 'bcrypt-ruby', '3.0.1'
 gem 'execjs'
 gem 'therubyracer'
-gem 'passenger'
 
 group :development, :test do
   gem 'sqlite3', '1.3.5'
