@@ -71,12 +71,13 @@ class UsersController < ApplicationController
     cmd = "#{docker_cmd} inspect #{container_id}"
     json_infos = `#{cmd}`
     i = JSON.parse(json_infos)
-    @user.port = i[0]["NetworkSettings"]["Ports"]["6667/tcp"]["HostPort"].to_i
+    @user.port = i[0]["NetworkSettings"]["Ports"]["6667/tcp"][0]["HostPort"]
     @user.container_id = container_id
     @user.docker_ip = i[0]["NetworkSettings"]["IpAddress"]
     sleep 2
     @user.log = `#{docker_cmd} logs #{container_id}`
   end
+
   
   $VALIDATE_IP_REGEX = /^([01]?\d\d?|2[0-4]\d|25[0-5])\.([01]?\d\d?|2[0-4]\d|25[0-5])\.([01]?\d\d?|2[0-4]\d|25[0-5])\.([01]?\d\d?|2[0-4]\d|25[0-5])$/  
   def check_ip(i)
